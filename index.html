@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Studio DATA</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Studio DATA</h1>
+
+    <!-- Search & Filter Controls -->
+    <input
+      type="text"
+      id="search-bar"
+      placeholder="Search titles..."
+      onkeyup="filterTitles()"
+    />
+    <div class="filters">
+      <button onclick="filterByCategory('all')">All</button>
+      <button onclick="filterByCategory('project')">Projects</button>
+      <button onclick="filterByCategory('blog')">Blog</button>
+      <button onclick="filterByCategory('radio')">Radio</button>
+    </div>
+
+    <!-- List Container -->
+    <ul id="content-list"></ul>
+
+    <!-- Popup Modal for Viewing Details -->
+    <div id="modal" class="modal">
+      <div class="modal-header">
+        <span class="close" id="close-modal">&times;</span>
+      </div>
+      <div class="modal-content">
+        <button id="prev-arrow" class="arrow">←</button>
+        <div id="modal-body"></div>
+        <button id="next-arrow" class="arrow">→</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
