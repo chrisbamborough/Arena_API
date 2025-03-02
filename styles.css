@@ -132,6 +132,35 @@ li:hover .hover-thumbnail {
   display: block;
 }
 
+/* About panel shown on hover */
+.has-about {
+  position: relative; /* allows the about-container to position absolutely */
+  display: inline-block;
+}
+
+.about-container {
+  display: none;
+  position: absolute;
+  top: 110%; /* just below the title */
+  left: 0;
+  width: 200px; /* fixed width */
+  background: white;
+  border: 2px solid black;
+  padding: 10px;
+  box-shadow: 3px 3px black;
+  z-index: 9999;
+  white-space: normal; /* allows normal wrapping */
+  word-wrap: break-word; /* break long words */
+  overflow-wrap: break-word;
+  font-size: 14px; /* or any preferred size */
+  margin: 0;
+  line-height: 1.4;
+}
+
+.has-about:hover .about-container {
+  display: block;
+}
+
 /* Modal Styling */
 .modal {
   display: none;
