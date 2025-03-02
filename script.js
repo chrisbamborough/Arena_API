@@ -6,14 +6,13 @@ const projects = [
 const blogChannel = "the-architects-measure-13xwa6qxgnk";
 const radioChannel = "a-nomad-of-smooth-space";
 
-let allContent = []; // Stores blog & radio posts
-let projectBlocks = []; // Stores blocks of the currently opened project
-let currentBlockIndex = 0; // Track block position
+let allContent = [];
+let projectBlocks = [];
+let currentBlockIndex = 0;
 
 async function fetchAllContent() {
   allContent = [];
 
-  // Fetch all projects (only their names, no blocks)
   const projectTitles = projects.map((proj) => ({
     id: proj.slug,
     title: proj.name,
@@ -21,7 +20,6 @@ async function fetchAllContent() {
     project: proj.name,
   }));
 
-  // Fetch blog and radio blocks
   const blogPromise = fetchChannelData(blogChannel, "blog", "Blog");
   const radioPromise = fetchChannelData(radioChannel, "radio", "Radio");
 
@@ -34,7 +32,6 @@ async function fetchAllContent() {
   }
 }
 
-// Fetch channel data for blog and radio
 async function fetchChannelData(slug, category, projectName) {
   try {
     const response = await fetch(`https://api.are.na/v2/channels/${slug}`);
@@ -54,35 +51,28 @@ async function fetchChannelData(slug, category, projectName) {
   }
 }
 
-// Display project titles & blog/radio posts
 function displayTitles(contentList) {
   const listContainer = document.getElementById("content-list");
   listContainer.innerHTML = "";
 
   contentList.forEach((item) => {
     const listItem = document.createElement("li");
-    listItem.textContent = `${item.title}`;
+    listItem.textContent = item.title;
     listItem.classList.add(item.category);
 
-    // Create the hover thumbnail
     const thumbnail = document.createElement("img");
     thumbnail.classList.add("hover-thumbnail");
-    thumbnail.style.display = "none"; // Initially hidden
+    thumbnail.style.display = "none";
 
-    // Assign image based on category
     if (item.category === "project") {
       fetchProjectImage(item.id, thumbnail);
     } else if (item.content && item.content.image) {
       thumbnail.src = item.content.image.original.url;
     }
 
-    // Append the list item to the UL
     listContainer.appendChild(listItem);
-
-    // Append thumbnail directly to the body for global positioning
     document.body.appendChild(thumbnail);
 
-    // Hover events
     listItem.addEventListener("mouseenter", () => {
       thumbnail.style.display = "block";
     });
@@ -91,13 +81,11 @@ function displayTitles(contentList) {
       thumbnail.style.display = "none";
     });
 
-    // Update thumbnail position on mouse move
     listItem.addEventListener("mousemove", (event) => {
       thumbnail.style.left = `${event.pageX + 10}px`;
       thumbnail.style.top = `${event.pageY + 10}px`;
     });
 
-    // Click functionality
     if (item.category === "project") {
       listItem.addEventListener("click", () => openProjectModal(item.id));
     } else {
@@ -106,7 +94,6 @@ function displayTitles(contentList) {
   });
 }
 
-// Function to fetch first image from a project channel
 async function fetchProjectImage(projectSlug, thumbnailElement) {
   try {
     const response = await fetch(
@@ -148,15 +135,14 @@ function filterByCategory(category) {
   });
 }
 
-// Open project modal and fetch its blocks
 async function openProjectModal(projectSlug) {
   try {
     const response = await fetch(
       `https://api.are.na/v2/channels/${projectSlug}`
     );
     const data = await response.json();
-    projectBlocks = data.contents; // Store blocks
-    currentBlockIndex = 0; // Reset index
+    projectBlocks = data.contents;
+    currentBlockIndex = 0;
 
     if (projectBlocks.length > 0) {
       showBlock(currentBlockIndex);
@@ -169,7 +155,6 @@ async function openProjectModal(projectSlug) {
   }
 }
 
-// Show a specific block inside the modal
 function showBlock(index) {
   const block = projectBlocks[index];
   if (!block) return;
@@ -190,7 +175,6 @@ function showBlock(index) {
   modalBody.innerHTML = modalContent;
 }
 
-// Navigate blocks inside the project modal
 function changeBlock(direction) {
   currentBlockIndex += direction;
   if (currentBlockIndex < 0) currentBlockIndex = 0;
@@ -199,7 +183,6 @@ function changeBlock(direction) {
   showBlock(currentBlockIndex);
 }
 
-// Open modal for Blog and Radio posts (NO arrows)
 function openModal(item) {
   const modal = document.getElementById("modal");
   const modalBody = document.getElementById("modal-body");
@@ -209,11 +192,9 @@ function openModal(item) {
   if (item.content.image) {
     modalContent += `<img src="${item.content.image.original.url}" alt="Image">`;
   }
-
   if (item.type === "text") {
     modalContent += `<p>${item.content.content}</p>`;
   }
-
   if (item.type === "link" && item.content.source) {
     modalContent += `<p><a href="${
       item.content.source.url
@@ -221,29 +202,23 @@ function openModal(item) {
             ${item.content.source.title || "View Link"}
         </a></p>`;
   }
-
-  // Add description if available
   if (item.content.description) {
     modalContent += `<p class="description">${item.content.description}</p>`;
   }
 
-  modalBody.innerHTML = `<h2>${item.title}</h2><p><strong>Category:</strong> ${
-    item.project || item.category
-  }</p>${modalContent}`;
+  modalBody.innerHTML = `<h2>${item.title}</h2>
+    <p><strong>Category:</strong> ${item.project || item.category}</p>
+    ${modalContent}`;
 
-  // Hide navigation arrows for blog/radio modals
   document.getElementById("prev-arrow").style.display = "none";
   document.getElementById("next-arrow").style.display = "none";
-
   modal.style.display = "flex";
 }
 
-// Close modal
 document.querySelector(".close").addEventListener("click", () => {
   document.getElementById("modal").style.display = "none";
 });
 
-// Handle modal navigation arrows
 document
   .getElementById("prev-arrow")
   .addEventListener("click", () => changeBlock(-1));
