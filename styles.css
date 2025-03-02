@@ -109,6 +109,29 @@ li:hover {
   color: white;
 }
 
+/* Hover Thumbnail */
+.hover-thumbnail {
+  position: fixed;
+  width: 200px;
+  height: auto;
+  border: 2px solid black;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* Keep above other elements */
+  background: white;
+  pointer-events: none;
+  display: none; /* Hidden by default, shown on mouseenter */
+}
+
+/* Positioning the thumbnail near the cursor */
+li {
+  position: relative;
+}
+
+/* Remove the old positioning rules */
+li:hover .hover-thumbnail {
+  display: block;
+}
+
 /* Modal Styling */
 .modal {
   display: none;

@@ -61,17 +61,66 @@ function displayTitles(contentList) {
 
   contentList.forEach((item) => {
     const listItem = document.createElement("li");
-    listItem.textContent = `${item.title} (${item.project || item.category})`;
+    listItem.textContent = `${item.title}`;
     listItem.classList.add(item.category);
 
+    // Create the hover thumbnail
+    const thumbnail = document.createElement("img");
+    thumbnail.classList.add("hover-thumbnail");
+    thumbnail.style.display = "none"; // Initially hidden
+
+    // Assign image based on category
+    if (item.category === "project") {
+      fetchProjectImage(item.id, thumbnail);
+    } else if (item.content && item.content.image) {
+      thumbnail.src = item.content.image.original.url;
+    }
+
+    // Append the list item to the UL
+    listContainer.appendChild(listItem);
+
+    // Append thumbnail directly to the body for global positioning
+    document.body.appendChild(thumbnail);
+
+    // Hover events
+    listItem.addEventListener("mouseenter", () => {
+      thumbnail.style.display = "block";
+    });
+
+    listItem.addEventListener("mouseleave", () => {
+      thumbnail.style.display = "none";
+    });
+
+    // Update thumbnail position on mouse move
+    listItem.addEventListener("mousemove", (event) => {
+      thumbnail.style.left = `${event.pageX + 10}px`;
+      thumbnail.style.top = `${event.pageY + 10}px`;
+    });
+
+    // Click functionality
     if (item.category === "project") {
       listItem.addEventListener("click", () => openProjectModal(item.id));
     } else {
       listItem.addEventListener("click", () => openModal(item));
     }
-
-    listContainer.appendChild(listItem);
   });
+}
+
+// Function to fetch first image from a project channel
+async function fetchProjectImage(projectSlug, thumbnailElement) {
+  try {
+    const response = await fetch(
+      `https://api.are.na/v2/channels/${projectSlug}`
+    );
+    const data = await response.json();
+    const firstImageBlock = data.contents.find((block) => block.image);
+
+    if (firstImageBlock) {
+      thumbnailElement.src = firstImageBlock.image.original.url;
+    }
+  } catch (error) {
+    console.error(`Error fetching image for ${projectSlug}:`, error);
+  }
 }
 
 function filterTitles() {
