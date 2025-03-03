@@ -37,6 +37,9 @@ async function fetchChannelData(slug, category, projectName) {
     const response = await fetch(`https://api.are.na/v2/channels/${slug}`);
     const data = await response.json();
 
+    // Log the contents of the blocks to the console for debugging
+    console.log(`Data fetched for channel ${slug}:`, data.contents);
+
     return data.contents.map((block) => ({
       id: block.id,
       title: block.title || "Untitled",
@@ -209,23 +212,38 @@ function openModal(item) {
   const modal = document.getElementById("modal");
   const modalBody = document.getElementById("modal-body");
 
+  // Log the item being processed for debugging
+  console.log("Opening modal for item:", item);
+
   let modalContent = "";
 
-  if (item.content.image) {
-    modalContent += `<img src="${item.content.image.original.url}" alt="Image">`;
-  }
-  if (item.type === "text") {
-    modalContent += `<p>${item.content.content}</p>`;
-  }
-  if (item.type === "link" && item.content.source) {
-    modalContent += `<p><a href="${
-      item.content.source.url
-    }" target="_blank" rel="noopener noreferrer">
-            ${item.content.source.title || "View Link"}
-        </a></p>`;
-  }
-  if (item.content.description) {
-    modalContent += `<p class="description">${item.content.description}</p>`;
+  // Check if the block contains a SoundCloud URL and is of type media
+  if (
+    item.type === "media" &&
+    item.content.source &&
+    item.content.source.url.includes("soundcloud.com")
+  ) {
+    const soundCloudUrl = item.content.source.url;
+    modalContent += `<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(
+      soundCloudUrl
+    )}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>`;
+  } else {
+    if (item.content.image) {
+      modalContent += `<img src="${item.content.image.original.url}" alt="Image">`;
+    }
+    if (item.type === "text") {
+      modalContent += `<p>${item.content.content}</p>`;
+    }
+    if (item.type === "link" && item.content.source) {
+      modalContent += `<p><a href="${
+        item.content.source.url
+      }" target="_blank" rel="noopener noreferrer">
+              ${item.content.source.title || "View Link"}
+          </a></p>`;
+    }
+    if (item.content.description) {
+      modalContent += `<p class="description">${item.content.description}</p>`;
+    }
   }
 
   modalBody.innerHTML = `<h2>${item.title}</h2>
