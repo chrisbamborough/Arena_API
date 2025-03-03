@@ -1,8 +1,9 @@
 /* Hover Thumbnail */
 .hover-thumbnail {
   position: fixed;
-  width: 200px;
-  height: auto;
+  width: 200px; /* Ensure the width is fixed */
+  height: auto; /* Adjust height as needed */
+  max-width: 75vw; /* Ensure the width does not exceed 75% of the viewport width */
   border: 2px solid black;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 9999;

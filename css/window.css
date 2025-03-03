@@ -1,0 +1,20 @@
+/* Classic Mac OS Window */
+.window {
+  background: white;
+  border: 3px solid black;
+  box-shadow: 4px 4px black;
+  width: 320px;
+  padding: 12px;
+  position: relative;
+  font-size: 14px;
+  text-align: left;
+}
+
+.window-title {
+  background: black;
+  color: white;
+  padding: 6px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 3px solid black;
+}

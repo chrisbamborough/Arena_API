@@ -82,8 +82,19 @@ function displayTitles(contentList) {
     });
 
     listItem.addEventListener("mousemove", (event) => {
+      const thumbnailHeight = thumbnail.offsetHeight;
+      const windowHeight = window.innerHeight;
+      let topPosition = event.pageY - thumbnailHeight / 2;
+
+      // Ensure the thumbnail does not go off the top or bottom of the screen
+      if (topPosition < 0) {
+        topPosition = 0;
+      } else if (topPosition + thumbnailHeight > windowHeight) {
+        topPosition = windowHeight - thumbnailHeight;
+      }
+
       thumbnail.style.left = `${event.pageX + 10}px`;
-      thumbnail.style.top = `${event.pageY + 10}px`;
+      thumbnail.style.top = `${topPosition}px`;
     });
 
     if (item.category === "project") {
