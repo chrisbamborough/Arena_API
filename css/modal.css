@@ -7,12 +7,13 @@
 .about-container {
   display: none;
   position: absolute;
-  top: 110%; /* just below the title */
-  left: 0;
-  width: 200px; /* fixed width */
+  top: 120%; /* just below the title */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for centering */
+  width: 50vw; /* fixed width */
   background: white;
   border: 2px solid black;
-  padding: 10px;
+  padding: 20px;
   box-shadow: 3px 3px black;
   z-index: 9999;
   white-space: normal; /* allows normal wrapping */
@@ -21,6 +22,7 @@
   font-size: 14px; /* or any preferred size */
   margin: 0;
   line-height: 1.4;
+  text-align: center; /* Center the content */
 }
 
 .has-about:hover .about-container {

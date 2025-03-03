@@ -29,10 +29,12 @@ li:hover .hover-thumbnail {
 }
 
 #content-list {
-  width: 50%;
+  display: flex; /* Default to flex for list view */
+  flex-wrap: wrap; /* Allow items to wrap */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
 }
 
-/* Base styles for li items */
 #content-list li {
   border: 2px solid black;
   margin: 5px;
@@ -41,27 +43,37 @@ li:hover .hover-thumbnail {
   justify-content: center;
   text-align: center;
   cursor: pointer;
+  height: 100%; /* Ensure full height in flex mode */
+}
+
+/* Ensure text stays centered when display is block */
+#content-list li.block {
+  display: block;
+  display: flex;
+  align-items: center;
+  justify-self: center; /* Center items horizontally */
+  text-align: center;
+  height: auto; /* Reset height to auto when in block mode */
 }
 
 /* When NOT in grid view, force each list item to be 50px tall */
 #content-list:not(.grid-view) li {
   height: 30px;
+  width: 100%; /* Ensure full width in list view */
 }
 
 /* Grid View Styles */
-/* Use a responsive grid layout */
 .grid-view {
-  display: grid;
+  display: grid; /* Use CSS Grid for grid view */
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
-  justify-items: center; /* horizontally center items within each cell */
-  align-items: center; /* vertically center items within each cell */
+  justify-items: center; /* Horizontally center items within each cell */
+  align-items: center; /* Vertically center items within each cell */
 }
 
 .grid-view li {
   box-sizing: border-box;
   aspect-ratio: 1 / 1;
-  /* Remove or reduce padding to avoid changing aspect ratio */
   padding: 5px;
   margin: 0;
   border: 2px solid black;

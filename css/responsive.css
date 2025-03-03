@@ -10,14 +10,9 @@
 @media (min-width: 1024px) {
   #content-list {
     width: 75%;
+    grid-template-columns: repeat(6, 1fr); /* 6 items across */
   }
   #content-list li {
-    /* 
-        Divide the row into 6 columns.
-        Subtract margins: for a 6-item row, 
-        each item’s width ≈ (100% / 6) minus total horizontal margins. 
-      */
-    flex: 1 0 calc((100% / 6) - 10px);
     height: 150px; /* adjust as needed */
   }
 }
@@ -26,9 +21,9 @@
 @media (min-width: 768px) and (max-width: 1023px) {
   #content-list {
     width: 100%;
+    grid-template-columns: repeat(3, 1fr); /* 3 items across */
   }
   #content-list li {
-    flex: 1 0 calc((100% / 3) - 10px);
     height: 150px; /* adjust as needed */
   }
 }
@@ -37,9 +32,9 @@
 @media (max-width: 767px) {
   #content-list {
     width: 100%;
+    grid-template-columns: 1fr; /* 1 item per row */
   }
   #content-list li {
-    flex: 1 0 100%;
     height: 150px; /* adjust as needed */
   }
 }

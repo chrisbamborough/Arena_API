@@ -140,8 +140,10 @@ function filterByCategory(category) {
   items.forEach((item) => {
     if (category === "all" || item.classList.contains(category)) {
       item.style.display = "block";
+      item.classList.add("block");
     } else {
       item.style.display = "none";
+      item.classList.remove("block");
     }
   });
 }
