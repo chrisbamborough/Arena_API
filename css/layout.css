@@ -1,0 +1,72 @@
+ul {
+  list-style: none;
+  padding: 0;
+  width: 50%; /* Set width to 50% of the browser width */
+}
+
+li {
+  background: white;
+  border: 2px solid black;
+  padding: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+li:hover {
+  background: black;
+  color: white;
+}
+
+/* Positioning the thumbnail near the cursor */
+/* li {
+  position: relative;
+} */
+
+/* Remove the old positioning rules */
+li:hover .hover-thumbnail {
+  display: block;
+}
+
+#content-list {
+  width: 50%;
+}
+
+/* Base styles for li items */
+#content-list li {
+  border: 2px solid black;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* When NOT in grid view, force each list item to be 50px tall */
+#content-list:not(.grid-view) li {
+  height: 30px;
+}
+
+/* Grid View Styles */
+/* Use a responsive grid layout */
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  justify-items: center; /* horizontally center items within each cell */
+  align-items: center; /* vertically center items within each cell */
+}
+
+.grid-view li {
+  box-sizing: border-box;
+  aspect-ratio: 1 / 1;
+  /* Remove or reduce padding to avoid changing aspect ratio */
+  padding: 5px;
+  margin: 0;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

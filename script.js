@@ -135,6 +135,15 @@ function filterByCategory(category) {
   });
 }
 
+function setView(view) {
+  const listContainer = document.getElementById("content-list");
+  if (view === "grid") {
+    listContainer.classList.add("grid-view");
+  } else {
+    listContainer.classList.remove("grid-view"); // removes grid styles
+  }
+}
+
 async function openProjectModal(projectSlug) {
   try {
     const response = await fetch(

@@ -1,0 +1,12 @@
+/* Hover Thumbnail */
+.hover-thumbnail {
+  position: fixed;
+  width: 200px;
+  height: auto;
+  border: 2px solid black;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  background: white;
+  pointer-events: none;
+  display: none;
+}
