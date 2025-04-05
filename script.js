@@ -167,12 +167,9 @@ async function openProjectModal(projectSlug) {
     );
     const data = await response.json();
     projectBlocks = data.contents;
-    currentBlockIndex = 0;
 
     if (projectBlocks.length > 0) {
-      showBlock(currentBlockIndex);
-      document.getElementById("prev-arrow").style.display = "block";
-      document.getElementById("next-arrow").style.display = "block";
+      showAllBlocks(projectBlocks);
       document.getElementById("modal").style.display = "flex";
     }
   } catch (error) {
@@ -180,24 +177,27 @@ async function openProjectModal(projectSlug) {
   }
 }
 
-function showBlock(index) {
-  const block = projectBlocks[index];
-  if (!block) return;
-
+function showAllBlocks(blocks) {
   const modalBody = document.getElementById("modal-body");
   let modalContent = "";
 
-  if (block.image) {
-    modalContent = `<img src="${block.image.original.url}" alt="Project Image">`;
-  } else if (block.class === "Text") {
-    modalContent = `<p>${block.content}</p>`;
-  } else if (block.class === "Link") {
-    modalContent = `<p><a href="${block.source.url}" target="_blank">${
-      block.source.title || "View Link"
-    }</a></p>`;
-  }
+  blocks.forEach((block) => {
+    if (block.image) {
+      modalContent += `<div class="block full-width"><img src="${block.image.original.url}" alt="Project Image"></div>`;
+    } else if (block.class === "Text") {
+      modalContent += `<div class="block full-width"><p>${block.content}</p></div>`;
+    } else if (block.class === "Link") {
+      modalContent += `<div class="block full-width"><p><a href="${
+        block.source.url
+      }" target="_blank">${block.source.title || "View Link"}</a></p></div>`;
+    }
+  });
 
   modalBody.innerHTML = modalContent;
+
+  // Hide the arrows
+  document.getElementById("prev-arrow").style.display = "none";
+  document.getElementById("next-arrow").style.display = "none";
 }
 
 function changeBlock(direction) {
@@ -265,6 +265,46 @@ document
 document
   .getElementById("next-arrow")
   .addEventListener("click", () => changeBlock(1));
+
+document.addEventListener("click", (event) => {
+  const expandedImage = document.querySelector(".expanded-image");
+
+  // Close the expanded image if clicking outside of it
+  if (expandedImage && !event.target.classList.contains("expanded-image")) {
+    expandedImage.classList.remove("expanded-image");
+    expandedImage.classList.add("modal-image");
+  }
+
+  // Toggle the expanded-image class when clicking on an image
+  if (event.target.tagName === "IMG" && event.target.closest("#modal-body")) {
+    const img = event.target;
+
+    if (img.classList.contains("expanded-image")) {
+      img.classList.remove("expanded-image");
+      img.classList.add("modal-image");
+    } else {
+      img.classList.remove("modal-image");
+      img.classList.add("expanded-image");
+    }
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  const expandedImage = document.querySelector(".expanded-image");
+
+  // Close the expanded image when pressing the Escape key
+  if (event.key === "Escape" && expandedImage) {
+    expandedImage.classList.remove("expanded-image");
+    expandedImage.classList.add("modal-image");
+  }
+
+  const modal = document.getElementById("modal");
+
+  // Close the modal when pressing the Escape key
+  if (event.key === "Escape" && modal.style.display === "flex") {
+    modal.style.display = "none";
+  }
+});
 
 // Fetch initial data
 fetchAllContent();
