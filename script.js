@@ -38,7 +38,7 @@ async function fetchChannelData(slug, category, projectName) {
     const data = await response.json();
 
     // Log the contents of the blocks to the console for debugging
-    console.log(`Data fetched for channel ${slug}:`, data.contents);
+    //console.log(`Data fetched for channel ${slug}:`, data.contents);
 
     return data.contents.map((block) => ({
       id: block.id,
@@ -115,6 +115,9 @@ async function fetchProjectImage(projectSlug, thumbnailElement) {
     );
     const data = await response.json();
     const firstImageBlock = data.contents.find((block) => block.image);
+
+    // Log the contents of the blocks to the console for debugging
+    //console.log(`Data fetched for projects ${projectSlug}:`, data.contents);
 
     if (firstImageBlock) {
       thumbnailElement.src = firstImageBlock.image.original.url;
