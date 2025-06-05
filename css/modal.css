@@ -1,28 +1,27 @@
 /* About panel shown on hover */
 .has-about {
-  position: relative; /* allows the about-container to position absolutely */
+  position: relative; /* Allows the about-container to position absolutely */
   display: inline-block;
 }
 
 .about-container {
   display: none;
   position: absolute;
-  top: 120%; /* just below the title */
+  top: 120%; /* Just below the title */
   left: 50%; /* Center horizontally */
   transform: translateX(-50%); /* Adjust for centering */
-  width: 50vw; /* fixed width */
+  width: 50vw; /* Fixed width */
   background: white;
   border: 2px solid black;
   padding: 20px;
   box-shadow: 3px 3px black;
   z-index: 9999;
-  white-space: normal; /* allows normal wrapping */
-  word-wrap: break-word; /* break long words */
-  overflow-wrap: break-word;
-  font-size: 14px; /* or any preferred size */
+  white-space: normal; /* Allows normal wrapping */
+  overflow-wrap: break-word; /* Break long words */
+  font-size: 14px;
   margin: 0;
   line-height: 1.4;
-  text-align: center; /* Center the content */
+  text-align: center;
 }
 
 .has-about:hover .about-container {
@@ -37,42 +36,49 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60vw;
-  max-width: 480px;
+  width: 75vw; /* 3/4 of the viewport width */
+  height: 75vh; /* 3/4 of the viewport height */
   background: white;
   border: 3px solid black;
   box-shadow: 4px 4px black;
   padding: 20px;
   text-align: center;
+  overflow: hidden; /* Prevent content from overflowing the modal */
 }
 
 .modal-content {
   background: white;
-  width: 85vw;
-  max-width: 480px;
-  max-height: 70vh;
-  overflow-y: auto;
+  width: 100%; /* Full width of the modal */
+  height: 100%; /* Full height of the modal */
+  overflow-y: auto; /* Allow scrolling if content overflows vertically */
   padding: 15px;
-  position: relative;
-  text-align: center;
+  box-sizing: border-box; /* Include padding in height calculation */
 }
 
-/* Modal content */
-.modal-content img {
-  max-width: 100%;
-  max-height: 40vh;
-  height: auto;
+/* Default modal image styling */
+.modal-image {
+  width: 100%; /* Fit within the modal width */
+  height: 100%; /* Fit within the modal height */
+  object-fit: contain; /* Maintain aspect ratio */
   display: block;
-  margin: 0 auto;
+  margin: 0 auto; /* Center the image horizontally */
   border: 2px solid black;
+  cursor: zoom-in; /* Indicate the user can click to zoom in */
 }
 
-.modal img {
-  max-width: 100%;
-  max-height: 280px;
-  display: block;
-  margin: 10px auto;
-  border: 2px solid black;
+/* Expanded image styling */
+.expanded-image {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 75vw; /* Constrain width to 75% of the viewport */
+  max-height: 75vh; /* Constrain height to 75% of the viewport */
+  object-fit: contain; /* Maintain the aspect ratio */
+  z-index: 20; /* Ensure it appears above other elements */
+  background: white; /* Optional: Add a background to match the modal */
+  cursor: zoom-out; /* Indicate the user can click to zoom out */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for better visibility */
 }
 
 /* Modal navigation arrows */
@@ -95,14 +101,39 @@
   right: 10px;
 }
 
-.close:hover {
-  color: red;
-}
-
+/* Close button styling */
 .close {
   position: absolute;
   top: 5px;
   right: 10px;
   cursor: pointer;
   font-weight: bold;
+}
+
+.close:hover {
+  color: red;
+}
+
+/* Modal body styling */
+#modal-body {
+  max-height: calc(100% - 40px); /* Ensure content fits within the modal */
+  overflow-y: auto; /* Add vertical scrolling for overflowing content */
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+#modal-body .block.full-width {
+  width: 100%; /* Make each block span the full width */
+  margin-bottom: 16px; /* Add spacing between blocks */
+}
+
+/* Default modal image styling */
+#modal-body img {
+  max-width: 100%; /* Constrain the image to the modal's width */
+  max-height: 100%; /* Constrain the image to the modal's height */
+  object-fit: contain; /* Maintain the aspect ratio */
+  display: block;
+  margin: 0 auto; /* Center the image horizontally */
+  border: 2px solid black;
+  cursor: zoom-in; /* Indicate the user can click to zoom in */
 }

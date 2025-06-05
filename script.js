@@ -63,12 +63,17 @@ function displayTitles(contentList) {
     listItem.textContent = item.title;
     listItem.classList.add(item.category);
 
+    // Store image URL in data attribute for grid view
+    if (item.content && item.content.image) {
+      listItem.setAttribute("data-image-url", item.content.image.original.url);
+    }
+
     const thumbnail = document.createElement("img");
     thumbnail.classList.add("hover-thumbnail");
     thumbnail.style.display = "none";
 
     if (item.category === "project") {
-      fetchProjectImage(item.id, thumbnail);
+      fetchProjectImage(item.id, thumbnail, listItem);
     } else if (item.content && item.content.image) {
       thumbnail.src = item.content.image.original.url;
     }
@@ -76,29 +81,37 @@ function displayTitles(contentList) {
     listContainer.appendChild(listItem);
     document.body.appendChild(thumbnail);
 
-    listItem.addEventListener("mouseenter", () => {
-      thumbnail.style.display = "block";
-    });
+    // Only add hover events for list view (not grid view)
+    const isGridView = listContainer.classList.contains("grid-view");
+    if (!isGridView) {
+      listItem.addEventListener("mouseenter", () => {
+        thumbnail.style.display = "block";
+      });
 
-    listItem.addEventListener("mouseleave", () => {
-      thumbnail.style.display = "none";
-    });
+      listItem.addEventListener("mouseleave", () => {
+        thumbnail.style.display = "none";
+      });
 
-    listItem.addEventListener("mousemove", (event) => {
-      const thumbnailHeight = thumbnail.offsetHeight;
-      const windowHeight = window.innerHeight;
-      let topPosition = event.pageY - thumbnailHeight / 2;
+      listItem.addEventListener("mousemove", (event) => {
+        const thumbnailHeight = thumbnail.offsetHeight;
+        const windowHeight = window.innerHeight;
+        let topPosition = event.pageY - thumbnailHeight / 2;
 
-      // Ensure the thumbnail does not go off the top or bottom of the screen
-      if (topPosition < 0) {
-        topPosition = 0;
-      } else if (topPosition + thumbnailHeight > windowHeight) {
-        topPosition = windowHeight - thumbnailHeight;
-      }
+        // Ensure the thumbnail does not go off the top or bottom of the screen
+        if (topPosition < 0) {
+          topPosition = 0;
+        } else if (topPosition + thumbnailHeight > windowHeight) {
+          topPosition = windowHeight - thumbnailHeight;
+        }
 
-      thumbnail.style.left = `${event.pageX + 10}px`;
-      thumbnail.style.top = `${topPosition}px`;
-    });
+        thumbnail.style.left = `${event.pageX + 10}px`;
+        thumbnail.style.top = `${topPosition}px`;
+      });
+    }
+
+    // Store reference to thumbnail for this list item
+    listItem._thumbnail = thumbnail;
+    thumbnail._associatedItem = listItem;
 
     if (item.category === "project") {
       listItem.addEventListener("click", () => openProjectModal(item.id));
@@ -106,9 +119,14 @@ function displayTitles(contentList) {
       listItem.addEventListener("click", () => openModal(item));
     }
   });
+
+  // If we're already in grid view, apply grid view styles
+  if (listContainer.classList.contains("grid-view")) {
+    applyGridView();
+  }
 }
 
-async function fetchProjectImage(projectSlug, thumbnailElement) {
+async function fetchProjectImage(projectSlug, thumbnailElement, listItem) {
   try {
     const response = await fetch(
       `https://api.are.na/v2/channels/${projectSlug}`
@@ -121,6 +139,14 @@ async function fetchProjectImage(projectSlug, thumbnailElement) {
 
     if (firstImageBlock) {
       thumbnailElement.src = firstImageBlock.image.original.url;
+
+      // Store image URL in data attribute for grid view
+      if (listItem) {
+        listItem.setAttribute(
+          "data-image-url",
+          firstImageBlock.image.original.url
+        );
+      }
     }
   } catch (error) {
     console.error(`Error fetching image for ${projectSlug}:`, error);
@@ -156,11 +182,78 @@ function filterByCategory(category) {
 
 function setView(view) {
   const listContainer = document.getElementById("content-list");
+
   if (view === "grid") {
     listContainer.classList.add("grid-view");
+    applyGridView();
   } else {
     listContainer.classList.remove("grid-view"); // removes grid styles
+    resetToListView();
   }
+}
+
+// Function to apply grid view appearance
+function applyGridView() {
+  const listItems = document.querySelectorAll("#content-list li");
+
+  listItems.forEach((item) => {
+    // Store the original text content
+    const originalText = item.textContent;
+    item.setAttribute("data-title", originalText);
+
+    // Clear the text content
+    item.textContent = "";
+
+    // Create an image element for grid view
+    const img = document.createElement("img");
+    img.classList.add("grid-image");
+
+    // Get the image URL from the data attribute
+    const imageUrl = item.getAttribute("data-image-url");
+
+    if (imageUrl) {
+      img.src = imageUrl;
+    } else if (item._thumbnail && item._thumbnail.src) {
+      // Fallback to the hover thumbnail if available
+      img.src = item._thumbnail.src;
+    }
+
+    // If no image found or loaded, show a placeholder with the title
+    img.onerror = () => {
+      item.textContent = originalText;
+    };
+
+    item.appendChild(img);
+
+    // Hide the hover thumbnail for grid view
+    if (item._thumbnail) {
+      item._thumbnail._gridMode = true;
+    }
+  });
+}
+
+// Function to reset to list view appearance
+function resetToListView() {
+  const listItems = document.querySelectorAll("#content-list li");
+
+  listItems.forEach((item) => {
+    // Get the stored title
+    const originalText = item.getAttribute("data-title");
+
+    // Remove any images
+    const images = item.querySelectorAll(".grid-image");
+    images.forEach((img) => img.remove());
+
+    // Restore the text
+    if (originalText) {
+      item.textContent = originalText;
+    }
+
+    // Re-enable hover thumbnails
+    if (item._thumbnail) {
+      item._thumbnail._gridMode = false;
+    }
+  });
 }
 
 async function openProjectModal(projectSlug) {
@@ -170,12 +263,9 @@ async function openProjectModal(projectSlug) {
     );
     const data = await response.json();
     projectBlocks = data.contents;
-    currentBlockIndex = 0;
 
     if (projectBlocks.length > 0) {
-      showBlock(currentBlockIndex);
-      document.getElementById("prev-arrow").style.display = "block";
-      document.getElementById("next-arrow").style.display = "block";
+      showAllBlocks(projectBlocks);
       document.getElementById("modal").style.display = "flex";
     }
   } catch (error) {
@@ -183,24 +273,27 @@ async function openProjectModal(projectSlug) {
   }
 }
 
-function showBlock(index) {
-  const block = projectBlocks[index];
-  if (!block) return;
-
+function showAllBlocks(blocks) {
   const modalBody = document.getElementById("modal-body");
   let modalContent = "";
 
-  if (block.image) {
-    modalContent = `<img src="${block.image.original.url}" alt="Project Image">`;
-  } else if (block.class === "Text") {
-    modalContent = `<p>${block.content}</p>`;
-  } else if (block.class === "Link") {
-    modalContent = `<p><a href="${block.source.url}" target="_blank">${
-      block.source.title || "View Link"
-    }</a></p>`;
-  }
+  blocks.forEach((block) => {
+    if (block.image) {
+      modalContent += `<div class="block full-width"><img src="${block.image.original.url}" alt="Project Image"></div>`;
+    } else if (block.class === "Text") {
+      modalContent += `<div class="block full-width"><p>${block.content}</p></div>`;
+    } else if (block.class === "Link") {
+      modalContent += `<div class="block full-width"><p><a href="${
+        block.source.url
+      }" target="_blank">${block.source.title || "View Link"}</a></p></div>`;
+    }
+  });
 
   modalBody.innerHTML = modalContent;
+
+  // Hide the arrows
+  document.getElementById("prev-arrow").style.display = "none";
+  document.getElementById("next-arrow").style.display = "none";
 }
 
 function changeBlock(direction) {
@@ -268,6 +361,46 @@ document
 document
   .getElementById("next-arrow")
   .addEventListener("click", () => changeBlock(1));
+
+document.addEventListener("click", (event) => {
+  const expandedImage = document.querySelector(".expanded-image");
+
+  // Close the expanded image if clicking outside of it
+  if (expandedImage && !event.target.classList.contains("expanded-image")) {
+    expandedImage.classList.remove("expanded-image");
+    expandedImage.classList.add("modal-image");
+  }
+
+  // Toggle the expanded-image class when clicking on an image
+  if (event.target.tagName === "IMG" && event.target.closest("#modal-body")) {
+    const img = event.target;
+
+    if (img.classList.contains("expanded-image")) {
+      img.classList.remove("expanded-image");
+      img.classList.add("modal-image");
+    } else {
+      img.classList.remove("modal-image");
+      img.classList.add("expanded-image");
+    }
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  const expandedImage = document.querySelector(".expanded-image");
+
+  // Close the expanded image when pressing the Escape key
+  if (event.key === "Escape" && expandedImage) {
+    expandedImage.classList.remove("expanded-image");
+    expandedImage.classList.add("modal-image");
+  }
+
+  const modal = document.getElementById("modal");
+
+  // Close the modal when pressing the Escape key
+  if (event.key === "Escape" && modal.style.display === "flex") {
+    modal.style.display = "none";
+  }
+});
 
 // Fetch initial data
 fetchAllContent();

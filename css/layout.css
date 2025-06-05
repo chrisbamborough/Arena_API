@@ -18,11 +18,6 @@ li:hover {
   color: white;
 }
 
-/* Positioning the thumbnail near the cursor */
-/* li {
-  position: relative;
-} */
-
 /* Remove the old positioning rules */
 li:hover .hover-thumbnail {
   display: block;
@@ -46,20 +41,19 @@ li:hover .hover-thumbnail {
   height: 100%; /* Ensure full height in flex mode */
 }
 
-/* Ensure text stays centered when display is block */
-#content-list li.block {
-  display: block;
-  display: flex;
-  align-items: center;
-  justify-self: center; /* Center items horizontally */
-  text-align: center;
-  height: auto; /* Reset height to auto when in block mode */
-}
-
 /* When NOT in grid view, force each list item to be 50px tall */
 #content-list:not(.grid-view) li {
   height: 30px;
   width: 100%; /* Ensure full width in list view */
+}
+
+/* Important: When item is filtered (display: block applied in JS), 
+   preserve the flex alignment for text */
+#content-list li.block {
+  display: flex !important; /* Override the display: block from JS */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* Grid View Styles */
@@ -74,11 +68,32 @@ li:hover .hover-thumbnail {
 .grid-view li {
   box-sizing: border-box;
   aspect-ratio: 1 / 1;
-  padding: 5px;
+  padding: 0; /* Remove padding for grid items */
   margin: 0;
-  border: 2px solid black;
+  border: none; /* Remove border for grid view items */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: hidden; /* Prevent image overflow */
+  background: transparent; /* Remove background */
+}
+
+/* Style for the images in grid view */
+.grid-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the container while maintaining aspect ratio */
+  display: block;
+}
+
+/* Remove hover effects for grid view items */
+.grid-view li:hover {
+  background: transparent;
+  color: inherit;
+}
+
+/* Hide hover thumbnails when in grid view */
+.grid-view ~ .hover-thumbnail {
+  display: none !important;
 }
